@@ -1,5 +1,5 @@
 import Sequelize from "sequelize"
-
+const Op = Sequelize.Op;
 
 export default class database {
     constructor(password, host) {
@@ -72,5 +72,10 @@ export default class database {
             name: name,
             numbers: numbers
         })
+    }
+    async findContact(number) {
+        const test = '%' + number + '%'
+        const contact = await this.contacts.findAll({ where: { numbers: { [Op.like]: test } } })
+        return contact
     }
 }

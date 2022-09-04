@@ -114,6 +114,12 @@ vcard.parseVcardFile('./contacts.vcf', async function (err, data) {
 });
 
 
+setTimeout(async () => {
+    const contact1 = await database.findContact('09981264885')
+    console.log(contact1)
+}, 2000)
+
+
 
 
 
