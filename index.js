@@ -1,9 +1,4 @@
-// const qrcode = require('qrcode-terminal');
-// const env = require('dotenv')
-// const TelegramBot = require('node-telegram-bot-api')
-// const { Client } = require('whatsapp-web.js');
-// const Database = require('./database')
-// var vcard = require('vcard-json');
+
 import qrcode from 'qrcode-terminal'
 import env from 'dotenv'
 import TelegramBot from 'node-telegram-bot-api'
@@ -115,11 +110,9 @@ vcard.parseVcardFile('./contacts.vcf', async function (err, data) {
 
 
 setTimeout(async () => {
-    const contact1 = await database.findContact('09981264885')
-    console.log(contact1)
+    const contact1 = await database.findContact('099812623455')
+    console.log(contact1.name) // needs if 
 }, 2000)
-
-
 
 
 
@@ -141,18 +134,24 @@ client.on('message', async (message) => {
     const number = mobile.substring(2, 11)
 
     const callableNumber = 0 + number
+    const contactName = await database.findContact(callableNumber)
+    let senderName = null
+
+    if (contactName) senderName = contactName.name
 
     if (message._data.quotedMsg) reply = message._data.quotedMsg.body
 
 
-    database.createMessage(callableNumber, msgText, date)
+    await database.createMessage(callableNumber, msgText, date, senderName)
 
-    // try {
-    //     if (reply) return bot.sendMessage(chatId, `${msgText} \n\n ${reply} \n\n  ${callableNumber} \n${name} `)
-    //     bot.sendMessage(chatId, `${msgText}  \n\n  ${callableNumber} \n${name} `)
-    // } catch (err) {
-    //     console.log('telegram' + err.message)
-    // }
+    try {
+        if (senderName && reply) return bot.sendMessage(chatId, `${msgText} \n\n ${reply} \n\n  ${senderName} `)
+        if (senderName) return bot.sendMessage(chatId, `${msgText}  \n\n  ${senderName} `)
+        if (reply) return bot.sendMessage(chatId, `${msgText} \n\n ${reply} \n\n  ${callableNumber} \n${name} `)
+        bot.sendMessage(chatId, `${msgText}  \n\n  ${callableNumber} \n${name} `)
+    } catch (err) {
+        console.log('telegram' + err.message)
+    }
 }
 
 );

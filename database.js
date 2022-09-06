@@ -30,6 +30,10 @@ export default class database {
                 type: Sequelize.STRING,
                 allowNull: false
             },
+            senderName: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
             timestamp: {
                 type: Sequelize.INTEGER,
                 allowNull: false
@@ -60,11 +64,12 @@ export default class database {
             console.error('Unable to connect to the database:', error);
         }
     }
-    async createMessage(mobile, msgText, date) {
+    async createMessage(mobile, msgText, date, senderName) {
         await this.message.create({
             number: mobile,
             msgContent: msgText,
-            timestamp: date
+            timestamp: date,
+            senderName: senderName
         })
     }
     async createContact(name, numbers) {
@@ -75,7 +80,7 @@ export default class database {
     }
     async findContact(number) {
         const test = '%' + number + '%'
-        const contact = await this.contacts.findAll({ where: { numbers: { [Op.like]: test } } })
+        const contact = await this.contacts.findOne({ where: { numbers: { [Op.like]: test } }, attributes: ['name'] })
         return contact
     }
 }
